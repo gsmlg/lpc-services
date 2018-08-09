@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  registry:
+    image: sisk/npm-registry-couchapp:2.6.10
+    ports:
+      - 5984
+    restart: unless-stopped
+    volumes:
+      - couch_logs:/usr/local/var/log/couchdb
+      - couch_data:/usr/local/var/lib/couchdb
+
+  kappa:
+    image: sisk/kappa:1.0.0-rc.14
+    depends_on:
+      - registry
+    ports:
+      - 10001:8000
+    restart: unless-stopped
+
+  cdn:
+    image: gsmlg/npm-cdn:latest
+    volumes:
+      - npm_cdn_mirrors:/mirrors
+    ports:
+      - 10002:80
+    restart: unless-stopped
+
+volumes:
+  couch_logs: {}
+  couch_data: {}
+  npm_cdn_mirrors: {}
