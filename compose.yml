@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  stunnel:
+    image: "gsmlg/proxy:stunnel"
+    restart: unless-stopped
+    environment:
+      - PROXY_MODE=slave
+      - PROXY_SERVER=proxy.gsmlg.org:13128
+    ports:
+      - "3128:80"
+  acme:
+    image: "gsmlg/acme:latest"
+    restart: unless-stopped
+    environment:
+      - CF_Email=gsmlg.com@gmail.com
+      - CF_Key
+    volumes:
+      - ./domains.txt:/domains.txt
+      - certs:/certs
+  nginx:
+    image: "gsmlg/proxy:nginx"
+    restart: unless-stopped
+    volumes:
+      - nginx_logs:/var/log/nginx
+      - sites:/etc/nginx/sites
+      - certs:/etc/certs:ro
+      - ./ssl.conf:/etc/nginx/ssl.conf
+    ports:
+      - "443:443"
+      - "80:80"
+  mirrors:
+    image: "gsmlg/mirrors:latest"
+    restart: unless-stopped
+    environment:
+      - NAME=mirrors
+      - SERVER_NAME=${MIRROR_SERVER_NAME}
+      - SERVER_MODE=${MIRROR_MODE}
+      - MASTER_URL=${MIRROR_MASTER_SERVER}
+    volumes:
+      - mirrors_data:/mirrors
+      - sites:/sites
+
+volumes:
+  certs: {}
+  sites: {}
+  mirrors_data: {}
+  nginx_logs: {}
+
+

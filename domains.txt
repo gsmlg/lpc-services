@@ -1,0 +1,2 @@
+zddi.gsmlg.org
+*.zddi.gsmlg.org
