@@ -17,18 +17,6 @@ services:
       - 127.0.0.1:10002:80
     restart: unless-stopped
 
-  stunnel:
-    image: gsmlg/proxy:stunnel
-    restart: unless-stopped
-    environment:
-      - PROXY_MODE
-      - PROXY_SERVER
-    volumes:
-      - certs:/etc/certs:ro
-    ports:
-      - 13128:443
-      - 3128:80
-
   npm_registry:
     image: sisk/npm-registry-couchapp:2.6.10
     restart: unless-stopped
@@ -46,6 +34,27 @@ services:
     volumes:
       - ./config.tmpl:/opt/kappa/config.json
 
+  db:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=beforeCloud
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  nextcloud:
+    image: nextcloud
+    ports:
+      - 10800:80
+    links:
+      - db
+    volumes:
+      - nextcloud:/var/www/html
+    restart: always
 
 volumes:
   couch_logs: {}
@@ -53,5 +62,7 @@ volumes:
   npm_cdn_mirrors: {}
   docker_registry_data: {}
   certs: {}
+  nextcloud:
+  db:
 
 
