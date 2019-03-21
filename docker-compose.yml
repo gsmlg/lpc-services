@@ -39,7 +39,7 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
-      - db:/var/lib/mysql
+      - /nextcloud/db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=beforeCloud
       - MYSQL_PASSWORD=nextcloud
@@ -53,8 +53,23 @@ services:
     links:
       - db
     volumes:
-      - nextcloud:/var/www/html
+      - /nextcloud/data:/var/www/html
     restart: always
+
+  rancher:
+    image: rancher/rancher
+    restart: unless-stopped
+    ports:
+      - 10080:80
+      - 10443:443
+
+  singlecloud:
+    image: zdnscloud/singlecloud:v0.1.0
+    restart: unless-stopped
+    ports:
+      - 10880:80
+    
+
 
 volumes:
   couch_logs: {}
