@@ -64,7 +64,7 @@ services:
       - 10443:443
 
   singlecloud:
-    image: zdnscloud/singlecloud:dev
+    image: zdnscloud/singlecloud:latest
     restart: unless-stopped
     ports:
       - 10880:80
