@@ -69,6 +69,16 @@ services:
     ports:
       - 10880:80
     
+  stunnel:
+    image: gsmlg/proxy:stunnel
+    restart: unless-stopped
+    environment:
+      - PROXY_MODE=slave
+      - PROXY_SERVER=sg.gsmlg.org
+    volumes:
+      - certs:/etc/certs:ro
+    ports:
+      - 3128:80
 
 
 volumes:
